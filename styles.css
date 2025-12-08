@@ -187,3 +187,16 @@ th, td {
 #dropletSuggestions table {
   min-width:700px; /* wide enough for all columns; adjust if you want tighter */
 }
+
+/* Mobile layout fixes */
+@media (max-width: 768px) {
+  /* Stack 2-column grids into a single column on phones */
+  .grid.g2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* If content (tables) is wider than the card, allow horizontal scroll inside the card */
+.card {
+  overflow-x: auto;
+}
