@@ -178,3 +178,12 @@ th, td {
   border-bottom: 1px solid #ddd;
 
 }
+
+/* Mobile-friendly behavior for droplet suggestions table */
+#dropletSuggestions {
+  overflow-x:auto;
+}
+
+#dropletSuggestions table {
+  min-width:700px; /* wide enough for all columns; adjust if you want tighter */
+}
