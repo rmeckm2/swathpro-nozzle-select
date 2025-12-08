@@ -1,0 +1,173 @@
+:root {
+  --bg:#f7f7f9;
+  --card:#fff;
+  --ink:#111827;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --ok:#0ea5e9;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:14px/1.35 system-ui,Segoe UI,Roboto,Arial;
+}
+
+.wrap {
+  max-width:980px;
+  margin:24px auto;
+  padding:0 12px;
+}
+
+h1 {
+  margin:0 0 8px;
+  font-size:20px;
+}
+
+.muted {
+  color:var(--muted);
+  font-size:12px;
+}
+
+.grid {
+  display:grid;
+  gap:12px;
+}
+
+.g2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+
+@media (max-width:800px){
+  .g2 { grid-template-columns:1fr; }
+}
+
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+}
+
+label {
+  display:block;
+  font-weight:600;
+  margin:8px 0 6px;
+}
+
+input, select, button {
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink);
+  font:14px/1.3 inherit;
+}
+
+.row {
+  display:flex;
+  gap:10px;
+}
+.row > * {
+  flex:1;
+}
+
+.btn {
+  cursor:pointer;
+}
+.btn.ok {
+  background:var(--ok);
+  color:#fff;
+  border-color:var(--ok);
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th, td {
+  padding:8px 10px;
+  border-top:1px solid var(--line);
+  text-align:left;
+  vertical-align:top;
+}
+
+/* Rate table stacked & tight */
+.rate-table {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-size:13px;
+}
+
+.rate-table-row {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:6px;
+  align-items:center;
+}
+
+
+.rate-table-head {
+  font-weight:600;
+}
+
+.rate-table-row input {
+  width:100%;
+  padding:6px 8px;
+  font-size:13px;
+}
+.rate-table-row select {
+  width:100%;
+  padding:6px 8px;
+  font-size:13px;
+}
+
+
+/* Pills for pattern quality */
+.pill {
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  border:1px solid var(--line);
+}
+.p-green {
+  background:#ecfdf5;
+  color:#065f46;
+  border-color:#a7f3d0;
+}
+.p-yellow {
+  background:#fffbeb;
+  color:#7c2d12;
+  border-color:#fde68a;
+}
+.p-red {
+  background:#fef2f2;
+  color:#7f1d1d;
+  border-color:#fecaca;
+}
+.warn-banner {
+  padding:8px 10px;
+  border-radius:8px;
+  background:#fef2f2;
+  color:#7f1d1d;
+  border:1px solid #fecaca;
+  font-size:12px;
+  margin-bottom:8px;
+}
+/* Target Droplet Table — color rows by RATE ROW */
+
+.dsc-rate-1 { background: #fffbea; } /* very soft pastel yellow */
+.dsc-rate-2 { background: #eef7ff; } /* very soft pastel blue   */
+.dsc-rate-3 { background: #f0fbf0; } /* very soft pastel green  */
+
+.dsc-rate-none { background: #fafafa; } /* neutral gray */
+
+.dsc-colored td {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}

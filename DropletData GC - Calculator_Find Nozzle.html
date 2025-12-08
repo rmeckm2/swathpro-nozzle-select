@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Droplet Data</title>
+  <style>
+    body {
+      font-family:
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI Symbol",
+        Arial,
+        sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      background: #f5f7fa;
+      color: #222;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.6rem;
+    }
+    h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      max-width: 1100px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.03em;
+      color: #555;
+    }
+    select {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 0.5rem 1.25rem;
+      border-radius: 4px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .results {
+      margin-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .results-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem 1.5rem;
+    }
+    .result-block {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .result-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.03em;
+      color: #6b7280;
+      margin-bottom: 0.15rem;
+    }
+    .result-label .unit {
+      text-transform: none;
+    }
+    .result-value {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #e0f2fe;
+      color: #0369a1;
+      letter-spacing: 0.03em;
+    }
+    .note {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    .pwm-header {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      color: #374151;
+    }
+    /* Unified PWM background theme */
+.pwm-bg,
+.pwm-block .result-block {
+  background: #fff7e6;          /* soft warm amber */
+  border: 1px solid #f2d19a;    /* matching border tone */
+}
+
+.pwm-header {
+  background: none;
+  color: #8a5a00;               /* warm dark amber text */
+  font-weight: 700;
+}
+.pwm-bg {
+  padding: 0.75rem !important;
+}
+    .divider {
+      margin: 1.25rem 0;
+      border: none;
+      border-top: 1px solid #e5e7eb;
+    }
+    .search-section {
+      margin-top: 0.5rem;
+    }
+    .search-grid {
+      align-items: flex-end;
+    }
+    .search-note {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+    .search-results {
+      margin-top: 0.75rem;
+      max-height: 260px;
+      overflow: auto;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .search-results table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .search-results th,
+    .search-results td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .search-results th {
+      background: #e5f0ff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .search-results tbody tr:nth-child(even) {
+      background: #f3f4f6;
+    }
+    .search-empty {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+	    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 0.4rem 0 0.6rem 0;
+      color: #374151;
+    }
+
+    .pwm-toggle {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+    }
+
+    .pwm-toggle input {
+      cursor: pointer;
+    }
+	/* Add spacing below the PWM Effect card */
+.pwm-header-row {
+  margin-bottom: 0.75rem;   /* adjust to taste (0.5–1.0rem recommended) */
+}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Droplet Data – Atomization Model</h1>
+
+    <div class="grid">
+      <div>
+        <label for="nozzleModel">Nozzle Model</label>
+        <select id="nozzleModel"></select>
+      </div>
+
+      <div>
+        <label for="orifice">Orifice Size</label>
+        <select id="orifice"></select>
+      </div>
+
+      <div>
+        <label for="angle">Nozzle Body Angle (deg)</label>
+        <select id="angle"></select>
+      </div>
+
+      <div>
+        <label for="pressure">Nozzle Pressure (psi)</label>
+        <select id="pressure"></select>
+      </div>
+
+      <div>
+        <label for="airspeed">Airspeed (MPH)</label>
+        <select id="airspeed"></select>
+      </div>
+    </div>
+
+    <div class="results" id="results" style="display:none;">
+
+<div class="usda-header-row">
+  <h2>USDA ARS High Speed Spray Nozzle Data</h2>
+  <label class="pwm-toggle">
+    <input type="checkbox" id="showPwmToggle">
+    Show Estimated PWM Data
+  </label>
+</div>
+
+
+      <!-- USDA Row 1: %V<100, DV, RS -->
+      <div class="results-row">
+        <div class="result-block">
+          <div class="result-label">%V &lt; 100 <span class="unit">µm</span></div>
+          <div class="result-value" id="v100Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">D<sub>v0.1</sub> <span class="unit">(µm)</span></div>
+          <div class="result-value" id="dv01Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">D<sub>v0.5</sub> <span class="unit">(µm)</span></div>
+          <div class="result-value" id="dv05Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">D<sub>v0.9</sub> <span class="unit">(µm)</span></div>
+          <div class="result-value" id="dv09Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">Relative Span (RS)</div>
+          <div class="result-value" id="rsValue">–</div>
+        </div>
+      </div>
+
+      <!-- USDA Row 2: %V<200, DSC per DV, overall DSC -->
+      <div class="results-row">
+        <div class="result-block">
+          <div class="result-label">%V &lt; 200 <span class="unit">µm</span></div>
+          <div class="result-value" id="v200Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">DSC<sub>v0.1</sub></div>
+          <div class="result-value" id="dsc01Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">DSC<sub>v0.5</sub></div>
+          <div class="result-value" id="dsc05Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">DSC<sub>v0.9</sub></div>
+          <div class="result-value" id="dsc09Value">–</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">DSC (USDA)</div>
+          <div class="result-value">
+            <span class="badge" id="dscOverallLabel">–</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="pwmSection">
+        <!-- PWM blanket statement -->
+        <div class="results-row pwm-header-row">
+  <div class="result-block pwm-bg" style="grid-column: 1 / -1;">
+            <div class="pwm-header">PWM Effect (Estimated)</div>
+            <div class="note" id="pwmNote">
+              With PWM enabled, internal wind-tunnel tests suggest
+              approximately a 5% reduction in D<sub>v</sub> values and a 10% increase
+              in driftable fines (%V&lt;100 and %V&lt;200). Values below are
+              CapstanAG estimates derived from USDA continuous-spray data,
+              not independent USDA wind-tunnel measurements.
+            </div>
+          </div>
+        </div>
+		
+		    
+
+        <!-- PWM Row: estimated DV + fines + DSC -->
+        <div class="results-row pwm-block">
+          <div class="result-block">
+            <div class="result-label">PWM %V &lt; 100 <span class="unit">µm</span></div>
+            <div class="result-value" id="v100PwmValue">–</div>
+          </div>
+          <div class="result-block">
+            <div class="result-label">PWM D<sub>v0.1</sub> <span class="unit">(µm)</span></div>
+            <div class="result-value" id="dv01PwmValue">–</div>
+          </div>
+          <div class="result-block">
+            <div class="result-label">PWM D<sub>v0.5</sub> <span class="unit">(µm)</span></div>
+            <div class="result-value" id="dv05PwmValue">–</div>
+          </div>
+          <div class="result-block">
+            <div class="result-label">PWM D<sub>v0.9</sub> <span class="unit">(µm)</span></div>
+            <div class="result-value" id="dv09PwmValue">–</div>
+          </div>
+          <div class="result-block">
+            <div class="result-label">PWM DSC</div>
+            <div class="result-value" id="dscPwmValue">–</div>
+          </div>
+        </div>
+		<div class="note">
+      USDA rows show continuous-spray atomization model outputs (D<sub>v</sub>, %V, RS, DSC).
+      PWM row applies a simple blanket factor to illustrate estimated PWM impact relative to USDA data.
+    </div>
+      </div>
+
+    <hr class="divider">
+
+    <!-- FIND NOZZLES BY DROPLET CATEGORY -->
+    <div class="search-section">
+      <h2>Find Nozzles by Droplet Category</h2>
+      <div class="grid search-grid">
+        <div>
+          <label for="dscSearch">Target Droplet Category (USDA)</label>
+          <select id="dscSearch">
+            <option value="VERY FINE">VERY FINE</option>
+            <option value="FINE">FINE</option>
+            <option value="MEDIUM" selected>MEDIUM</option>
+            <option value="COARSE">COARSE</option>
+            <option value="VERY COARSE">VERY COARSE</option>
+            <option value="EXT. COARSE">EXT. COARSE</option>
+            <option value="ULT. COARSE">ULT. COARSE</option>
+          </select>
+        </div>
+        <div>
+          <div class="search-note">
+            Uses current Orifice, Pressure, and Airspeed selections.<br>
+            Searches all nozzle families and all supported angles.
+          </div>
+        </div>
+      </div>
+
+      <div id="searchResults" class="search-results">
+        <div class="search-empty">No search run yet. Select a droplet category and click "Find Nozzles".</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------
+    // CCD-coded regression model (from 2022 High Speed Spray Nozzle Models)
+    // ------------------------------------------------------------
+
+    const DROPLET_DB = {
+      "CP11TT 20° Flat Fan": {
+        ccd: {
+          orfSub: 12,
+          orfDiv: 8,
+          asSub: 150,
+          asDiv: 30,
+          pressSub: 60,
+          pressDiv: 30,
+          angSub: 45,
+          angDiv: 45
+        },
+        dv01: [
+          87.494915254,
+          14.505555556,
+          -28.45555556,
+          6.2888888889,
+          -49.25,
+          -6.1125,
+          3.3125,
+          1.9125,
+          -4.55,
+          14.6,
+          -6.125,
+          -4.82740113,
+          4.8225988701,
+          0.9225988701,
+          15.67259887
+        ],
+        dv05: [
+          217.38305085,
+          34.122222222,
+          -62.21111111,
+          12.2,
+          -104.9611111,
+          -16.7,
+          8.9875,
+          1.5375,
+          -17.7,
+          35.775,
+          -20.7375,
+          -6.346892655,
+          13.253107345,
+          1.2531073446,
+          28.403107345
+        ],
+        dv09: [
+          382.3559322,
+          85.55,
+          -115.9388889,
+          26,
+          -213.8277778,
+          -28.0375,
+          15.425,
+          0.5,
+          -52.4875,
+          67.0375,
+          -43.6,
+          -6.365254237,
+          27.834745763,
+          5.1847457627,
+          63.434745763
+        ],
+        less100: [
+          12.829813559,
+          -3.445888889,
+          6.0168888889,
+          0.4987777778,
+          11.765166667,
+          -0.5895625,
+          -0.5198125,
+          0.0324375,
+          -2.4668125,
+          2.8744375,
+          1.8526875,
+          1.8307175141,
+          0.0907175141,
+          -0.319282486,
+          2.9382175141
+        ],
+        less200: [
+          44.247457627,
+          -6.683333333,
+          12.772222222,
+          -0.661111111,
+          26.166666667,
+          0.35,
+          -0.1,
+          -2.2625,
+          -2.1,
+          1.0375,
+          3.8625,
+          2.861299435,
+          -0.438700565,
+          -1.038700565,
+          3.011299435
+        ],
+        orifices: [4, 6, 8, 10, 12, 15, 20],
+        angles: [0, 15, 30, 45, 60, 75, 90]
+      },
+
+      "TeeJet SS": {
+        ccd: {
+          orfSub: 11,
+          orfDiv: 9,
+          asSub: 153,
+          asDiv: 33,
+          pressSub: 58,
+          pressDiv: 35,
+          angSub: 0,
+          angDiv: 1
+        },
+        dv01: [
+          167.618284405659,
+          -10.4984517968544,
+          -125.388963883865,
+          49.7118255951831,
+          0,
+          13.318392298282,
+          -9.43761855623859,
+          -52.8825763343083,
+          0,
+          0,
+          0,
+          4.5908133905233,
+          78.2655590566396,
+          -1.48141146188175,
+          0
+        ],
+        dv05: [
+          404.573766106937,
+          -5.04881263024502,
+          -265.437565543489,
+          102.864908311752,
+          0,
+          17.9568421444214,
+          -21.1607066779711,
+          -100.259798205726,
+          0,
+          0,
+          0,
+          -1.3739823882621,
+          163.243939835696,
+          -10.6237390716259,
+          0
+        ],
+        dv09: [
+          683.78805147931,
+          19.8979120135567,
+          -408.285409459618,
+          130.372868637608,
+          0,
+          -2.41764018924356,
+          -48.2568359664576,
+          -112.25641515016,
+          0,
+          0,
+          0,
+          -30.0045853067263,
+          265.382708432272,
+          -45.8721275156206,
+          0
+        ],
+        less100: [
+          3.08936084931593,
+          0.426755115037744,
+          4.16509547838055,
+          -1.74862731089006,
+          0,
+          0.35635988661466,
+          -0.0449687585162372,
+          -1.38961131527369,
+          0,
+          0,
+          0,
+          0.151437927781673,
+          1.40171018034076,
+          0.567647342778763,
+          0
+        ],
+        less200: [
+          12.7682633910758,
+          0.831140237898505,
+          14.2480927036038,
+          -5.94123100312058,
+          0,
+          -0.0902413599716164,
+          0.424589698495041,
+          -4.15204420349472,
+          0,
+          0,
+          0,
+          0.387996177150344,
+          3.87338584903696,
+          1.85367094774397,
+          0
+        ],
+        orifices: [2, 3, 4, 6, 8, 10, 12, 15, 20],
+        angles: [0]
+      }
+    };
+
+    const AIRSPEEDS = [
+      120, 125, 130, 135, 140, 145, 150,
+      155, 160, 165, 170, 175, 180
+    ];
+
+    const PRESSURES = [
+      30, 35, 40, 45, 50, 55,
+      60, 65, 70, 75, 80, 85, 90
+    ];
+
+    // DV thresholds from Reference Nozzles
+    const DV_THRESHOLDS = {
+      dv01: [59.5, 110.3, 162.0, 191.7, 226.1, 302.5],
+      dv05: [134.4, 248.1, 357.8, 431.0, 500.9, 658.6],
+      dv09: [236.4, 409.4, 584.0, 737.1, 819.8, 1142.2]
+    };
+
+    const DSC_LABELS = {
+      1: "VERY FINE",
+      2: "FINE",
+      3: "MEDIUM",
+      4: "COARSE",
+      5: "VERY COARSE",
+      6: "EXT. COARSE",
+      7: "ULT. COARSE"
+    };
+
+    // PWM blanket factors
+    const PWM_DV_FACTOR   = 0.95; // -5% Dv
+    const PWM_FINE_FACTOR = 1.10; // +10% fines
+
+    // ------------------------------------------------------------
+    // Core math
+    // ------------------------------------------------------------
+
+    function codeVariables(cfg, orifice, airspeed, pressure, angle) {
+      const c = cfg.ccd;
+      const orf   = (orifice  - c.orfSub)   / c.orfDiv;
+      const as    = (airspeed - c.asSub)    / c.asDiv;
+      const press = (pressure - c.pressSub) / c.pressDiv;
+      const ang   = (angle    - c.angSub)   / c.angDiv;
+      return { orf, as, press, ang };
+    }
+
+    function evaluateResponse(coeffs, coded) {
+      const { orf, as, press, ang } = coded;
+      const [
+        B, C, D, E, F,
+        G, H, I, J, K,
+        L, M, N, O, P
+      ] = coeffs;
+
+      return (
+        B +
+        C * orf + D * as + E * press + F * ang +
+        G * orf * as +
+        H * orf * press +
+        I * as * press +
+        J * orf * ang +
+        K * as * ang +
+        L * press * ang +
+        M * orf * orf +
+        N * as * as +
+        O * press * press +
+        P * ang * ang
+      );
+    }
+
+    function classifyDVToCode(dv, thresholds) {
+      const [vf_f, f_m, m_c, c_vc, vc_xc, xc_uc] = thresholds;
+
+      if (dv >= xc_uc) return 7;
+      if (dv >= vc_xc) return 6;
+      if (dv >= c_vc)  return 5;
+      if (dv >= m_c)   return 4;
+      if (dv >= f_m)   return 3;
+      if (dv >= vf_f)  return 2;
+      if (dv >= 0)     return 1;
+      return null;
+    }
+
+    function classifyDSC(dv01, dv05, dv09) {
+      const code01 = classifyDVToCode(dv01, DV_THRESHOLDS.dv01);
+      const code05 = classifyDVToCode(dv05, DV_THRESHOLDS.dv05);
+      const code09 = classifyDVToCode(dv09, DV_THRESHOLDS.dv09);
+
+      const label01 = code01 ? (DSC_LABELS[code01] || "UNKNOWN") : null;
+      const label05 = code05 ? (DSC_LABELS[code05] || "UNKNOWN") : null;
+      const label09 = code09 ? (DSC_LABELS[code09] || "UNKNOWN") : null;
+
+      if (code01 == null || code05 == null) {
+        return {
+          overallCode: null,
+          overallLabel: "OUT OF RANGE",
+          code01, code05, code09,
+          label01, label05, label09
+        };
+      }
+
+      const overallCode = Math.min(code01, code05);
+      const overallLabel = DSC_LABELS[overallCode] || "UNKNOWN";
+
+      return {
+        overallCode,
+        overallLabel,
+        code01, code05, code09,
+        label01, label05, label09
+      };
+    }
+
+    // Unified droplet evaluator for any nozzle/orifice/condition
+    function evaluateNozzleDroplet(modelName, orifice, pressure, airspeed, angle) {
+      const cfg = DROPLET_DB[modelName];
+      if (!cfg) return null;
+
+      const coded = codeVariables(cfg, orifice, airspeed, pressure, angle);
+
+      const dv01 = evaluateResponse(cfg.dv01, coded);
+      const dv05 = evaluateResponse(cfg.dv05, coded);
+      const dv09 = evaluateResponse(cfg.dv09, coded);
+
+      let v100 = NaN, v200 = NaN;
+      if (cfg.less100 && cfg.less200) {
+        v100 = evaluateResponse(cfg.less100, coded);
+        v200 = evaluateResponse(cfg.less200, coded);
+      }
+
+      const rs = (dv05 !== 0) ? (dv09 - dv01) / dv05 : NaN;
+      const dsc = classifyDSC(dv01, dv05, dv09);
+
+      // PWM estimated
+      const dv01Pwm = dv01 * PWM_DV_FACTOR;
+      const dv05Pwm = dv05 * PWM_DV_FACTOR;
+      const dv09Pwm = dv09 * PWM_DV_FACTOR;
+      const v100Pwm = isFinite(v100) ? v100 * PWM_FINE_FACTOR : NaN;
+      const v200Pwm = isFinite(v200) ? v200 * PWM_FINE_FACTOR : NaN;
+      const dscPwm = classifyDSC(dv01Pwm, dv05Pwm, dv09Pwm);
+
+      return {
+        model: modelName,
+        orifice,
+        pressure,
+        airspeed,
+        angle,
+
+        dv01, dv05, dv09,
+        v100, v200,
+        rs,
+        dsc,
+
+        pwm: {
+          dv01: dv01Pwm,
+          dv05: dv05Pwm,
+          dv09: dv09Pwm,
+          v100: v100Pwm,
+          v200: v200Pwm,
+          dsc: dscPwm
+        }
+      };
+    }
+
+    // Find nozzles whose USDA DSC matches target label, at given orifice/pressure/airspeed
+    function findNozzlesByDSC(targetLabel, pressure, airspeed, orifice) {
+      const results = [];
+
+      for (const family in DROPLET_DB) {
+        const cfg = DROPLET_DB[family];
+        if (!cfg.orifices || !cfg.orifices.includes(orifice)) continue;
+
+        const angles = (cfg.angles && cfg.angles.length) ? cfg.angles : [0];
+
+        for (const angle of angles) {
+          const data = evaluateNozzleDroplet(family, orifice, pressure, airspeed, angle);
+          if (!data) continue;
+
+          if (data.dsc.overallLabel === targetLabel) {
+            results.push(data);
+          }
+        }
+      }
+
+      // Sort by Dv0.5 ascending by default
+      results.sort((a, b) => a.dv05 - b.dv05);
+      return results;
+    }
+
+    // ------------------------------------------------------------
+    // UI wiring
+    // ------------------------------------------------------------
+
+    const nozzleModelSelect = document.getElementById("nozzleModel");
+    const orificeSelect     = document.getElementById("orifice");
+    const angleSelect       = document.getElementById("angle");
+    const pressureSelect    = document.getElementById("pressure");
+    const airspeedSelect    = document.getElementById("airspeed");
+
+    const resultsDiv        = document.getElementById("results");
+	const showPwmToggle     = document.getElementById("showPwmToggle");
+    const pwmSection        = document.getElementById("pwmSection");
+
+    const v100ValueEl       = document.getElementById("v100Value");
+    const v200ValueEl       = document.getElementById("v200Value");
+    const dv01ValueEl       = document.getElementById("dv01Value");
+    const dv05ValueEl       = document.getElementById("dv05Value");
+    const dv09ValueEl       = document.getElementById("dv09Value");
+    const rsValueEl         = document.getElementById("rsValue");
+
+    const dsc01ValueEl      = document.getElementById("dsc01Value");
+    const dsc05ValueEl      = document.getElementById("dsc05Value");
+    const dsc09ValueEl      = document.getElementById("dsc09Value");
+    const dscOverallLabelEl = document.getElementById("dscOverallLabel");
+
+    const v100PwmValueEl    = document.getElementById("v100PwmValue");
+    const dv01PwmValueEl    = document.getElementById("dv01PwmValue");
+    const dv05PwmValueEl    = document.getElementById("dv05PwmValue");
+    const dv09PwmValueEl    = document.getElementById("dv09PwmValue");
+    const dscPwmValueEl     = document.getElementById("dscPwmValue");
+
+    const dscSearchSelect   = document.getElementById("dscSearch");
+    const searchResultsDiv  = document.getElementById("searchResults");
+
+    function populateNozzleModels() {
+      nozzleModelSelect.innerHTML = "";
+      Object.keys(DROPLET_DB).forEach(model => {
+        const opt = document.createElement("option");
+        opt.value = model;
+        opt.textContent = model;
+        nozzleModelSelect.appendChild(opt);
+      });
+    }
+
+    function populateOrifices(model) {
+      const cfg = DROPLET_DB[model];
+      orificeSelect.innerHTML = "";
+      (cfg.orifices || []).forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o;
+        opt.textContent = o;
+        orificeSelect.appendChild(opt);
+      });
+    }
+
+    function populateAngles(model) {
+      const cfg = DROPLET_DB[model];
+      angleSelect.innerHTML = "";
+      const angles = (cfg.angles || []).filter(a => typeof a === "number");
+      angles.forEach(a => {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.textContent = a;
+        angleSelect.appendChild(opt);
+      });
+      if (!angles.length) {
+        const opt = document.createElement("option");
+        opt.value = 0;
+        opt.textContent = "0";
+        angleSelect.appendChild(opt);
+      }
+    }
+
+    function populateAirspeeds() {
+      airspeedSelect.innerHTML = "";
+      AIRSPEEDS.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        airspeedSelect.appendChild(opt);
+      });
+    }
+
+    function populatePressures() {
+      pressureSelect.innerHTML = "";
+      PRESSURES.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        pressureSelect.appendChild(opt);
+      });
+    }
+
+    function fmt(x, digits) {
+      if (!isFinite(x)) return "NaN";
+      return x.toFixed(digits);
+    }
+
+    function onCalculate() {
+      const model = nozzleModelSelect.value;
+      const cfg = DROPLET_DB[model];
+      if (!cfg) return;
+
+      const orifice  = parseFloat(orificeSelect.value);
+      const angle    = parseFloat(angleSelect.value);
+      const pressure = parseFloat(pressureSelect.value);
+      const airspeed = parseFloat(airspeedSelect.value);
+
+      const data = evaluateNozzleDroplet(model, orifice, pressure, airspeed, angle);
+      if (!data) return;
+
+      const { dv01, dv05, dv09, v100, v200, rs, dsc, pwm } = data;
+
+      // USDA outputs
+      v100ValueEl.textContent = isFinite(v100) ? fmt(v100, 2) + " %" : "N/A";
+      v200ValueEl.textContent = isFinite(v200) ? fmt(v200, 2) + " %" : "N/A";
+
+      dv01ValueEl.textContent = fmt(dv01, 0);
+      dv05ValueEl.textContent = fmt(dv05, 0);
+      dv09ValueEl.textContent = fmt(dv09, 0);
+      rsValueEl.textContent   = isFinite(rs) ? fmt(rs, 2) : "NaN";
+
+      dsc01ValueEl.textContent      = dsc.label01 || "–";
+      dsc05ValueEl.textContent      = dsc.label05 || "–";
+      dsc09ValueEl.textContent      = dsc.label09 || "–";
+      dscOverallLabelEl.textContent = dsc.overallLabel || "–";
+
+      // PWM estimated overlay
+      const dv01Pwm = pwm.dv01;
+      const dv05Pwm = pwm.dv05;
+      const dv09Pwm = pwm.dv09;
+      const v100Pwm = pwm.v100;
+      const v200Pwm = pwm.v200;
+      const dscPwm  = pwm.dsc;
+
+      v100PwmValueEl.textContent = isFinite(v100Pwm) ? fmt(v100Pwm, 2) + " %" : "N/A";
+      dv01PwmValueEl.textContent = fmt(dv01Pwm, 0);
+      dv05PwmValueEl.textContent = fmt(dv05Pwm, 0);
+      dv09PwmValueEl.textContent = fmt(dv09Pwm, 0);
+      dscPwmValueEl.textContent  = dscPwm.overallLabel || "–";
+
+      resultsDiv.style.display = "flex";
+    }
+
+    function renderSearchResults(results) {
+      if (!results || !results.length) {
+        searchResultsDiv.innerHTML =
+          '<div class="search-empty">No nozzles found that match the selected droplet category at this orifice / pressure / airspeed.</div>';
+        return;
+      }
+
+      let html = '<table><thead><tr>' +
+        '<th>Nozzle Family</th>' +
+        '<th>Nozzle Angle</th>' +
+        '<th>D<sub>v0.5</sub> (µm)</th>' +
+        '<th>DSC</th>' +
+        '<th>%V &lt; 100 µm</th>' +
+        '<th>%V &lt; 200 µm</th>' +
+      '</tr></thead><tbody>';
+
+      results.forEach(r => {
+        const dv05 = fmt(r.dv05, 0);
+        const v100 = isFinite(r.v100) ? fmt(r.v100, 2) + " %" : "N/A";
+        const v200 = isFinite(r.v200) ? fmt(r.v200, 2) + " %" : "N/A";
+        const dscLabel = r.dsc.overallLabel || "–";
+
+        html += '<tr>' +
+          `<td>${r.model}</td>` +
+          `<td>${r.angle}</td>` +
+          `<td>${dv05}</td>` +
+          `<td>${dscLabel}</td>` +
+          `<td>${v100}</td>` +
+          `<td>${v200}</td>` +
+        '</tr>';
+      });
+
+      html += '</tbody></table>';
+      searchResultsDiv.innerHTML = html;
+    }
+
+    function onFindNozzles() {
+      const targetLabel = dscSearchSelect.value;
+      const orifice  = parseFloat(orificeSelect.value);
+      const pressure = parseFloat(pressureSelect.value);
+      const airspeed = parseFloat(airspeedSelect.value);
+
+      if (!isFinite(orifice) || !isFinite(pressure) || !isFinite(airspeed)) {
+        searchResultsDiv.innerHTML =
+          '<div class="search-empty">Please select a valid orifice, pressure, and airspeed before searching.</div>';
+        return;
+      }
+
+      const results = findNozzlesByDSC(targetLabel, pressure, airspeed, orifice);
+      renderSearchResults(results);
+    }
+
+function recalcAll() {
+  onCalculate();
+  onFindNozzles();
+}
+
+
+    nozzleModelSelect.addEventListener("change", () => {
+      const model = nozzleModelSelect.value;
+      populateOrifices(model);
+      populateAngles(model);
+	  recalcAll();
+    });
+	
+	[orificeSelect, angleSelect, pressureSelect, airspeedSelect].forEach(el => {
+  el.addEventListener("change", recalcAll);
+});
+
+// Target droplet category changes should only rerun the search
+dscSearchSelect.addEventListener("change", onFindNozzles);
+
+
+
+    (function init() {
+      populateNozzleModels();
+      populateAirspeeds();
+      populatePressures();
+
+      const initialModel = nozzleModelSelect.value;
+      populateOrifices(initialModel);
+      populateAngles(initialModel);
+
+      pressureSelect.value = "60";
+      airspeedSelect.value = "150";
+
+      // Hide PWM section by default
+      if (pwmSection) {
+        pwmSection.style.display = "none";
+      }
+
+      // Toggle PWM visibility
+      if (showPwmToggle && pwmSection) {
+        showPwmToggle.addEventListener("change", () => {
+          pwmSection.style.display = showPwmToggle.checked ? "" : "none";
+        });
+      }
+
+      recalcAll();
+    })();
+
+  </script>
+</body>
+</html>

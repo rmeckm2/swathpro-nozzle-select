@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SwathPro Nozzle Selector – V1</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="wrap">
+  <h1>SwathPro Nozzle Selector</h1>
+  <div class="muted">
+    Pick aircraft and add number of T-Boom nozzles, then enter up to three rate / swath combos.
+  </div>
+
+  <!-- AIRCRAFT + T-BOOM + SPEED   |   RATES + SWATH + PSI -->
+  <div class="grid g2" style="margin-top:12px">
+    <!-- LEFT: Aircraft + T-Boom + Max Airspeed -->
+    <div class="card">
+      <label>Aircraft</label>
+      <select id="aircraft">
+        <option value="AT-402">AT-402</option>
+        <option value="AT-502">AT-502</option>
+        <option value="AT-602">AT-602</option>
+        <option value="AT-802" selected>AT-802</option>
+      </select>
+
+      <label style="margin-top:8px">Enter number of T-Boom nozzles</label>
+      <input id="tBoomCount" type="number" min="0" max="6" step="1" value="0">
+
+      <label style="margin-top:8px">Airspeed (mph)</label>
+      <input id="vHi" type="number" step="1" value="150" placeholder="max mph" max="220">
+	    <div style="margin-top:4px">
+    <b>Total nozzles:</b> <span id="nozzleCountDisplay">106</span>
+  </div>
+    </div>  <!-- ← this closing div was missing -->
+
+
+    <!-- RIGHT: Rates + Swaths + Droplet size + Pressure -->
+    <div class="card">
+      <label>Rates &amp; Swath widths</label>
+      <div class="muted" style="margin-bottom:4px">
+        Enter up to 3 Application Setups
+      </div>
+
+      <div class="rate-table">
+  <div class="rate-table-row rate-table-head">
+    <div>Rate (GPA)</div>
+    <div>Swath (ft)</div>
+    <div>Gauge (PSI)</div>
+    <div>Droplet Category</div>
+  </div>
+
+<div class="rate-table-row">
+  <div><input id="gpa1" type="number" step="0.1" value="3.0"></div>
+  <div><input id="swath1" type="number" step="1" value="75"></div>
+  <div><input id="psi1" type="number" step="1" value="50"></div>
+  <div>
+<select id="drop1" class="droplet-select">
+  <option value="">None</option>
+  <option value="ALL">All</option>
+  <option value="VERY FINE">VERY FINE</option>
+  <option value="FINE">FINE</option>
+  <option value="MEDIUM">MEDIUM</option>
+  <option value="COARSE">COARSE</option>
+  <option value="VERY COARSE">VERY COARSE</option>
+  <option value="EXT. COARSE">EXT. COARSE</option>
+  <option value="ULT. COARSE">ULT. COARSE</option>
+</select>
+  </div>
+</div>
+
+
+<div class="rate-table-row">
+  <div><input id="gpa2" type="number" step="0.1" value="5.0"></div>
+  <div><input id="swath2" type="number" step="1" value="75"></div>
+  <div><input id="psi2" type="number" step="1" value="50"></div>
+  <div>
+    <select id="drop2" class="droplet-select">
+      <option value="">None</option>
+      <option value="ALL">All</option>
+      <option value="VERY FINE">VERY FINE</option>
+      <option value="FINE">FINE</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="COARSE">COARSE</option>
+      <option value="VERY COARSE">VERY COARSE</option>
+      <option value="EXT. COARSE">EXT. COARSE</option>
+      <option value="ULT. COARSE">ULT. COARSE</option>
+    </select>
+  </div>
+</div>
+
+
+
+<div class="rate-table-row">
+  <div><input id="gpa3" type="number" step="0.1" value="7.0"></div>
+  <div><input id="swath3" type="number" step="1" value="75"></div>
+  <div><input id="psi3" type="number" step="1" value="50"></div>
+  <div>
+    <select id="drop3" class="droplet-select">
+      <option value="">None</option>
+      <option value="ALL">All</option>
+      <option value="VERY FINE">VERY FINE</option>
+      <option value="FINE">FINE</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="COARSE">COARSE</option>
+      <option value="VERY COARSE">VERY COARSE</option>
+      <option value="EXT. COARSE">EXT. COARSE</option>
+      <option value="ULT. COARSE">ULT. COARSE</option>
+    </select>
+  </div>
+</div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+  <!-- NOZZLE SIZING & PATTERNS -->
+  <div class="card" id="tableCard" style="display:none; margin-top:20px;">
+
+<div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-bottom:8px;">
+  <div>
+    <label>Sizing Mode (Single vs Multi)</label>
+    <select id="family"></select>
+    <div class="muted" style="margin-top:2px;">
+      Single = 1 orifice all rates. Multi = Orifice/rate.
+    </div>
+  </div>
+</div>
+
+
+    <!-- Single-nozzle viability warning -->
+    <div id="singleWarning" class="warn-banner" style="display:none;"></div>
+
+    <hr style="margin:8px 0; border:none; border-top:1px solid var(--line);" />
+
+    <table>
+      <thead>
+        <tr>
+          <th>Target GPA</th>
+          <th>Swath (ft)</th>
+          <th>Nozzle family</th>
+          <th>Orifice</th>
+          <th>Pattern</th>
+          <th>Active nozzles</th>
+          <th>Duty cycle</th>
+          <th>Nozzle PSI</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- DROPLET TARGET + SUGGESTIONS -->
+<div class="card" style="margin-top:12px;">
+  <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px;">
+    <div>
+      <label>Target Droplet Category (USDA)</label>
+      <div class="muted" style="margin-top:4px;">Automatic based on R1 / R2 / R3.</div>
+    </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+        <label style="display:flex; align-items:center; gap:4px; font-weight:500; white-space:nowrap;">
+          <input type="checkbox" id="useGaugePsi" />
+          Use Gauge Pressure (not recommended)
+        </label>
+      </div>
+
+      <div>
+        <button id="openDropletTool" class="btn ok">
+          Open Droplet Model
+        </button>
+      </div>
+    </div>
+
+    <div id="dropletSuggestions" style="margin-top:8px; display:none;">
+      <div class="muted" style="margin-bottom:4px;">
+        Table below shows all nozzle families / angles / orifice sizes in the USDA database
+        that match the selected droplet category at the current pressure and airspeed.
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Family</th>
+<th style="text-align:left;">Rate</th>
+<th style="text-align:right;" id="dropletPressureHeader">Nozzle PSI</th>
+<th style="text-align:right;">Nozzle Angle</th>
+<th style="text-align:right;">Orifice</th>
+<th style="text-align:right;">Dv0.5</th>
+<th style="text-align:right;">%&lt;100</th>
+<th style="text-align:right;">%&lt;200</th>
+<th style="text-align:left;">DSC</th>
+          </tr>
+        </thead>
+        <tbody id="dropletSuggestionsBody"></tbody>
+      </table>
+    </div>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html> <!-- RECOMMENDATION SUMMARY -->
