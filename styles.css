@@ -15,6 +15,86 @@ body {
   color:var(--ink);
   font:14px/1.35 system-ui,Segoe UI,Roboto,Arial;
 }
+/* ===== CAPSTANAG HEADER + TOOL SELECTOR ===== */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:#000;
+}
+
+.header-inner{
+  max-width:1100px;
+  margin:0 auto;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.brand-link{
+  display:flex;
+  align-items:center;
+  text-decoration:none;
+}
+
+.brand-logo{
+  height:34px;
+  width:auto;
+  display:block;
+}
+
+/* Tool navigation (RIGHT side) */
+.tool-nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  color:#e5e7eb;
+}
+
+.tool-label{
+  opacity:0.9;
+  font-weight:500;
+  white-space:nowrap;
+  margin-right:4px;
+}
+
+.tool-link{
+  padding:5px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.35);
+  color:#e5e7eb;
+  text-decoration:none;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.tool-link:hover{
+  background:rgba(255,255,255,0.12);
+}
+
+.tool-link.active{
+  background:#ffffff;
+  color:#000;
+  border-color:#ffffff;
+}
+
+/* Mobile layout */
+@media (max-width:720px){
+  .header-inner{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .tool-nav{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+}
+
 
 .wrap {
   max-width:980px;
@@ -200,3 +280,4 @@ th, td {
 .card {
   overflow-x: auto;
 }
+
